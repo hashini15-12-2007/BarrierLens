@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarrierLens</title>
+    <link rel="stylesheet" href="vector.css">
+  <!-- Leaflet Map -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+  
+</head>
+
+<body>
+
+
+<!-- =========================
+     LOGIN / REGISTER MODAL
+========================= -->
+
+<div id="authModal" class="auth-overlay">
+
+    <div class="auth-box">
+
+        <button class="auth-close" id="closeAuth">×</button>
+
+        <div class="auth-logo">
+            <div class="logo-icon">♿</div>
+            <div>
+                <h2>BarrierLens</h2>
+                <p>Detect barriers. Improve accessibility.</p>
+            </div>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab">
+                Sign In
+            </button>
+
+            <button class="auth-tab" id="registerTab">
+                Create Account
+            </button>
+        </div>
+
+        <!-- LOGIN -->
+
+        <form id="loginForm" class="auth-form">
+
+            <h3>Welcome back</h3>
+            <p class="auth-subtitle">
+                Sign in to access your reports and dashboard.
+            </p>
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label>Password</label>
+
+            <div class="password-field">
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter your password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="loginPassword"
+                >
+                    Show
+                </button>
+
+            </div>
+
+            <div class="auth-options">
+
+                <label class="remember">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember me</span>
+                </label>
+
+                <button
+                    type="button"
+                    id="forgotPassword"
+                    class="text-button"
+                >
+                    Forgot password?
+                </button>
+
+            </div>
+
+            <button type="submit" class="primary-auth-btn">
+                Sign In
+            </button>
+
+            <div id="loginMessage" class="auth-message"></div>
+
+        </form>
+
+
+        <!-- REGISTER -->
+
+        <form id="registerForm" class="auth-form hidden">
+
+            <h3>Create your account</h3>
+
+            <p class="auth-subtitle">
+                Join BarrierLens and help identify accessibility barriers.
+            </p>
+
+            <label>Full Name</label>
+
+            <input
+                type="text"
+                id="registerName"
+                placeholder="Enter your full name"
+                required
+            >
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="registerEmail"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label>Password</label>
+
+            <div class="password-field">
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Create a password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="registerPassword"
+                >
+                    Show
+                </button>
+
+            </div>
+
+            <label>Confirm Password</label>
+
+            <input
+                type="password"
+                id="registerConfirm"
+                placeholder="Confirm your password"
+                required
+            >
+
+            <label class="terms">
+
+                <input
+                    type="checkbox"
+                    id="acceptTerms"
+                    required
+                >
+
+                <span>
+                    I agree to the BarrierLens terms.
+                </span>
+
+            </label>
+
+            <button type="submit" class="primary-auth-btn">
+                Create Account
+            </button>
+
+            <div id="registerMessage" class="auth-message"></div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<div id="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                ♿
+            </div>
+
+            <div>
+                <h1>BarrierLens</h1>
+                <p>Detect barriers. Improve accessibility.</p>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <button
+                class="nav-item active"
+                data-page="dashboard"
+            >
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="detect"
+            >
+                <span>⌕</span>
+                Detect
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="map"
+            >
+                <span>⌖</span>
+                Map
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="reports"
+            >
+                <span>▤</span>
+                Reports
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="history"
+            >
+                <span>◷</span>
+                History
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="settings"
+            >
+                <span>⚙</span>
+                Settings
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar" id="sidebarAvatar">
+                U
+            </div>
+
+            <div class="user-info">
+
+                <strong id="sidebarUserName">
+                    Guest User
+                </strong>
+
+                <span id="sidebarUserEmail">
+                    Sign in required
+                </span>
+
+            </div>
+
+            <button id="sidebarAccountButton">
+                ⋮
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button id="mobileMenu" class="mobile-menu">
+                ☰
+            </button>
+
+            <div class="page-title">
+
+                <h2 id="pageTitle">
+                    Dashboard
+                </h2>
+
+                <p id="pageSubtitle">
+                    Overview of accessibility barriers
+                </p>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <button
+                    class="icon-button"
+                    id="notificationButton"
+                    title="Notifications"
+                >
+                    ♢
+                </button>
+
+                <button
+                    class="profile-button"
+                    id="profileButton"
+                >
+                    <span id="topAvatar">U</span>
+                    <span id="topUserName">Guest</span>
+                    <span>⌄</span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             DASHBOARD PAGE
+        ========================== -->
+
+        <section
+            class="page active"
+            id="dashboardPage"
+        >
+
+            <div class="hero-card">
+
+                <div>
+
+                    <span class="hero-label">
+                        ACCESSIBILITY MONITORING
+                    </span>
+
+                    <h1>
+                        Welcome to BarrierLens!
+                    </h1>
+
+                    <p>
+                        Detect real-world barriers and help make
+                        places more accessible for everyone.
+                    </p>
+
+                    <button
+                        class="primary-button"
+                        id="heroDetectButton"
+                    >
+                        Detect Barrier
+                    </button>
+
+                </div>
+
+                <div class="hero-illustration">
+                    <div class="city-icon">♿</div>
+                    <div class="road-line"></div>
+                    <div class="building b1"></div>
+                    <div class="building b2"></div>
+                    <div class="building b3"></div>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <!-- QUICK STATS -->
+
+                <div class="panel quick-panel">
+
+                    <div class="panel-header">
+
+                        <h3>Dashboard</h3>
+
+                        <button>•••</button>
+
+                    </div>
+
+                    <div class="quick-grid">
+
+                        <div class="quick-stat">
+                            <div class="quick-icon blue">▣</div>
+                            <span>Reported</span>
+                            <strong id="reportedCount">0</strong>
+                        </div>
+
+                        <div class="quick-stat">
+                            <div class="quick-icon green">✓</div>
+                            <span>Resolved</span>
+                            <strong id="resolvedCount">0</strong>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="outline-button"
+                        data-page-target="reports"
+                    >
+                        View Reports
+                    </button>
+
+                </div>
+
+
+                <!-- RECENT DETECTIONS -->
+
+                <div class="panel recent-panel">
+
+                    <div class="panel-header">
+
+                        <h3>Recent Detections</h3>
+
+                        <button>•••</button>
+
+                    </div>
+
+                    <div
+                        class="mini-map"
+                        id="dashboardMiniMap"
+                    >
+
+                        <div class="map-grid"></div>
+
+                        <span class="map-pin red p1">●</span>
+                        <span class="map-pin orange p2">●</span>
+                        <span class="map-pin green p3">●</span>
+                        <span class="map-pin red p4">●</span>
+                        <span class="map-pin orange p5">●</span>
+                        <span class="map-pin green p6">●</span>
+
+                    </div>
+
+                    <div
+                        class="recent-list"
+                        id="recentDetectionList"
+                    >
+
+                        <div class="empty-state">
+                            No recent detections
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATISTICS -->
+
+                <div class="panel statistics-panel">
+
+                    <div class="panel-header">
+
+                        <h3>Statistics Overview</h3>
+
+                        <button>•••</button>
+
+                    </div>
+
+                    <div class="total-number">
+
+                        <span>Total Detected</span>
+
+                        <strong id="totalDetected">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="category-stat">
+
+                        <div>
+                            <span class="dot red-dot"></span>
+                            Surface Barriers
+                        </div>
+
+                        <strong id="surfaceCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="category-stat">
+
+                        <div>
+                            <span class="dot orange-dot"></span>
+                            Obstruction Barriers
+                        </div>
+
+                        <strong id="obstructionCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="category-stat">
+
+                        <div>
+                            <span class="dot green-dot"></span>
+                            Transport
+                        </div>
+
+                        <strong id="transportCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="category-stat">
+
+                        <div>
+                            <span class="dot yellow-dot"></span>
+                            Visually Impaired
+                        </div>
+
+                        <strong id="visualCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="activity-chart">
+
+                        <div class="chart-line"></div>
+
+                        <div class="chart-labels">
+                            <span>00</span>
+                            <span>06</span>
+                            <span>12</span>
+                            <span>18</span>
+                            <span>24</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MY REPORTS -->
+
+            <div class="panel reports-preview">
+
+                <div class="panel-header">
+
+                    <h3>My Reports</h3>
+
+                    <button>•••</button>
+
+                </div>
+
+                <div class="report-table">
+
+                    <div class="table-row table-heading">
+                        <span>Barrier</span>
+                        <span>Category</span>
+                        <span>Location</span>
+                        <span>Status</span>
+                    </div>
+
+                    <div
+                        id="dashboardReports"
+                        class="table-body"
+                    >
+
+                        <div class="empty-table">
+                            No reports submitted yet.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="outline-button"
+                    id="addReportButton"
+                >
+                    + Add My Report
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             DETECT PAGE
+        ========================== -->
+
+        <section
+            class="page"
+            id="detectPage"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <h1>Detection & Report</h1>
+                    <p>
+                        Upload an image and report a detected barrier.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="detect-layout">
+
+                <div class="panel upload-panel">
+
+                    <div class="panel-header">
+
+                        <h3>Image Upload / Capture</h3>
+
+                    </div>
+
+                    <div
+                        class="upload-area"
+                        id="uploadArea"
+                    >
+
+                        <div class="upload-icon">
+                            ↑
+                        </div>
+
+                        <span>or</span>
+
+                        <button
+                            type="button"
+                            class="outline-button"
+                            id="selectImageButton"
+                        >
+                            Select file
+                        </button>
+
+                        <p>
+                            Drag & drop an image here
+                        </p>
+
+                        <input
+                            type="file"
+                            id="imageInput"
+                            accept="image/*"
+                            hidden
+                        >
+
+                    </div>
+
+                    <div
+                        class="image-preview"
+                        id="imagePreview"
+                    >
+
+                        <div class="preview-placeholder">
+                            Image preview will appear here
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="outline-button full-width"
+                        id="removeImageButton"
+                    >
+                        Remove Image
+                    </button>
+
+                </div>
+
+
+                <div class="panel detection-panel">
+
+                    <div class="panel-header">
+
+                        <h3>Detected Barrier</h3>
+
+                        <span
+                            class="status-badge"
+                            id="detectionStatus"
+                        >
+                            Ready
+                        </span>
+
+                    </div>
+
+                    <label>Category</label>
+
+                    <select id="categorySelect">
+
+                        <option value="surface">
+                            Surface
+                        </option>
+
+                        <option value="obstruction">
+                            Obstruction
+                        </option>
+
+                        <option value="transport">
+                            Transport
+                        </option>
+
+                        <option value="visual">
+                            Visually Impaired
+                        </option>
+
+                    </select>
+
+
+                    <label>Barrier Type</label>
+
+                    <select id="barrierType">
+
+                        <option>
+                            Cracked / Broken Sidewalk
+                        </option>
+
+                        <option>
+                            Pothole
+                        </option>
+
+                        <option>
+                            Blocked Path
+                        </option>
+
+                        <option>
+                            Missing Ramp
+                        </option>
+
+                        <option>
+                            Obstruction
+                        </option>
+
+                        <option>
+                            Blocked Bus Stop
+                        </option>
+
+                    </select>
+
+
+                    <label>Description</label>
+
+                    <textarea
+                        id="description"
+                        maxlength="500"
+                        placeholder="Describe the detected barrier..."
+                    ></textarea>
+
+                    <div
+    class="ai-analysis-box"
+    id="aiAnalysisResult"
+    style="display: none;"
+>
+    <h3>🤖 AI Analysis</h3>
+
+    <p id="aiAnalysisText"></p>
+</div>
+
+                    <div class="character-count">
+                        <span id="characterCount">0</span>/500
+                    </div>
+
+
+                    <label>Location</label>
+
+                    <div class="location-box">
+
+                        <span>⌖</span>
+
+                        <div>
+                            <strong id="locationText">
+                                Location not detected
+                            </strong>
+
+                            <small>
+                                GPS / address
+                            </small>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="detectLocationButton"
+                        >
+                            Detect
+                        </button>
+
+                    </div>
+
+
+                    <label>Severity</label>
+
+                    <div class="severity-options">
+
+                        <label>
+                          <input type="radio"
+                  name="severity"
+                  value="low">
+                          low
+                        </label>
+            <label>
+                      <input 
+                        type="radio"
+                        name="severity"
+                  value="medium">
+                      medium
+            </label>
+          <label>
+            <input 
+              type="radio"
+              name="severity"
+              value="high"
+              >
+            High
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="severity"
+              value="critical"
+              >
+            critical
+          </label>
+                    </div>
+  <button
+   class="primary-button full-width"
+    id="submitReportButton"
+    >
+    Submit Report
+  </button>
+</div>
+</div>
+</section>
+          <!-- =========================
+             MAP PAGE
+        ========================== -->
+
+        <section
+            class="page"
+            id="mapPage"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <h1>Accessibility Map</h1>
+                    <p>
+                        View reported barriers around you.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-button"
+                    id="locateMeButton"
+                >
+                    ⌖ Locate Me
+                </button>
+
+            </div>
+
+            <main class="map-container">
+
+                <div class="map-toolbar">
+
+                    <input
+                        type="search"
+                        id="mapSearch"
+                        placeholder="Search location..."
+                    >
+
+                    <select id="mapFilter">
+
+                        <option value="all">
+                            All Categories
+                        </option>
+
+                        <option value="surface">
+                            Surface Barriers
+                        </option>
+
+                        <option value="obstruction">
+                            Obstruction Barriers
+                        </option>
+
+                        <option value="transport">
+                            Transport
+                        </option>
+
+                        <option value="visual">
+                            Visually Impaired
+                        </option>
+
+                    </select>
+
+                </div>
+
+                    <div class="map-wrapper">
+
+        <div
+            id="accessibilityMap"
+            class="accessibility-map"
+        ></div>
+
+        <div
+            class="map-loading"
+            id="mapLoading"
+        >
+            Loading map...
+        </div>
+
+    </div>
+
+    <div
+        class="map-info-panel"
+        id="mapInfoPanel"
+    >
+
+        <div class="map-info-header">
+
+            <h3>Accessibility Reports</h3>
+
+            <span id="mapReportCount">
+                0 reports
+            </span>
+
+        </div>
+
+        <div
+            id="mapReportList"
+            class="map-report-list"
+        >
+            <p class="empty-map-message">
+                No accessibility reports found.
+            </p>
+        </div>
+
+    </div>
+
+</main>
+
+                
+                  
+
+        <!-- =========================
+             REPORTS PAGE
+        ========================== -->
+
+        <section
+            class="page"
+            id="reportsPage"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <h1>Reports</h1>
+                    <p>
+                        Review accessibility reports.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-button"
+                    id="reportsAddButton"
+                >
+                    + Add Report
+                </button>
+
+            </div>
+
+            <div class="filter-bar">
+
+                <input
+                    type="search"
+                    id="reportSearch"
+                    placeholder="Search reports..."
+                >
+
+                <select id="reportCategoryFilter">
+
+                    <option value="all">
+                        All Categories
+                    </option>
+
+                    <option value="surface">
+                        Surface
+                    </option>
+
+                    <option value="obstruction">
+                        Obstruction
+                    </option>
+
+                    <option value="transport">
+                        Transport
+                    </option>
+
+                    <option value="visual">
+                        Visually Impaired
+                    </option>
+
+                </select>
+
+                <select id="reportStatusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="reported">
+                        Reported
+                    </option>
+
+                    <option value="review">
+                        Under Review
+                    </option>
+
+                    <option value="resolved">
+                        Resolved
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div
+                class="reports-list"
+                id="reportsList"
+            >
+
+                <div class="empty-state">
+                    No reports available.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             HISTORY PAGE
+        ========================== -->
+
+        <section
+            class="page"
+            id="historyPage"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <h1>History</h1>
+                    <p>
+                        Your previous detection activity.
+                    </p>
+                </div>
+
+            </div>
+
+            <div
+                class="history-list"
+                id="historyList"
+            >
+
+                <div class="empty-state">
+                    No activity history yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SETTINGS PAGE
+        ========================== -->
+
+        <section
+            class="page"
+            id="settingsPage"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <h1>Settings</h1>
+                    <p>
+                        Manage your BarrierLens account.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="settings-grid">
+
+                <div class="panel settings-card">
+
+                    <h3>Account</h3>
+
+                    <div class="setting-row">
+
+                        <div>
+                            <strong>Name</strong>
+                            <span id="settingsName">
+                                Guest User
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="setting-row">
+
+                        <div>
+                            <strong>Email</strong>
+                            <span id="settingsEmail">
+                                Not signed in
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="outline-button"
+                        id="settingsAuthButton"
+                    >
+                        Sign In
+                    </button>
+
+                </div>
+
+
+                <div class="panel settings-card">
+
+                    <h3>Preferences</h3>
+
+                    <div class="setting-row">
+
+                        <div>
+                            <strong>Notifications</strong>
+                            <span>
+                                Report and detection updates
+                            </span>
+                        </div>
+
+                        <label class="switch">
+                            <input
+                                type="checkbox"
+                                id="notificationToggle"
+                                checked
+                            >
+                            <span class="slider"></span>
+                        </label>
+
+                    </div>
+
+                    <div class="setting-row">
+
+                        <div>
+                            <strong>Dark Mode</strong>
+                            <span>
+                                Use dark interface
+                            </span>
+                        </div>
+
+                        <label class="switch">
+                            <input
+                                type="checkbox"
+                                id="darkModeToggle"
+                            >
+                            <span class="slider"></span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ACCOUNT MENU -->
+
+    <div
+        class="account-menu"
+        id="accountMenu"
+    >
+
+        <button id="accountProfile">
+            Profile
+        </button>
+
+        <button id="accountSettings">
+            Settings
+        </button>
+
+        <button
+            id="logoutButton"
+            class="danger-button"
+        >
+            Sign Out
+        </button>
+
+    </div>
+
+
+    <!-- REPORT DETAILS MODAL -->
+
+    <div
+        class="modal-overlay hidden"
+        id="reportModal"
+    >
+
+        <div class="report-modal">
+
+            <button
+                class="modal-close"
+                id="closeReportModal"
+            >
+                ×
+            </button>
+
+            <div id="reportModalContent"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOAST -->
+
+    <div
+        id="toast"
+        class="toast"
+    >
+        <span id="toastMessage"></span>
+    </div>
+
+</div>
+
+
+
+
+
+<script src="vector.js"></script>
+
+</body>
+</html>
+
+                        
+                        
+                        
